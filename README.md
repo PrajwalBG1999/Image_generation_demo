@@ -31,11 +31,17 @@ $ conda activate control
 ### 2. Download the Model from Hugging Face
 Download the **[`control_sd15_canny.pth`](https://huggingface.co/lllyasviel/ControlNet/blob/main/models/control_sd15_canny.pth)** model (5.71GB) and place it in the `ControlNet/.models` folder.
 
-### 3. Move Required Files
+### 3. Download and Move Required Files
+Download awesomedemo_added_feature.py, main.py, index.html and Dockerfile and move those to ControlNet/
+Download mri_brain.jpg and move it to ControlNet/test_imgs/
 ```sh
-$ mv engineering/code/awesomedemo_added_feature.py ControlNet/
-$ mv engineering/img/mri_brain.jpg ControlNet/test_imgs/
+$ mv path_to/awesomedemo_added_feature.py ControlNet/
+$ mv path_to/main.py ControlNet/
+$ mv path_to/index.html ControlNet/
+$ mv path_to/Dockerfile ControlNet/
+$ mv path_to/mri_brain.jpg ControlNet/test_imgs/
 ```
+Note: Make sure to change the Dockerfile extension if it gets downloaded as text file.
 
 ### 4. Build & Run the Docker Container
 ```sh
