@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Stable Diffusion with Canny Edge Maps</title>
+</head>
+<body>
+
+    <form id="upload-form" enctype="multipart/form-data">
+        <label for="file">Upload Image:</label>
+        <input type="file" id="file" name="file" accept="image/*" required><br><br>
+        <label for="prompt">Prompt:</label>
+        <input type="text" id="prompt" name="prompt" required><br><br>
+        <label for="a_prompt">Added Prompt:</label>
+        <input type="text" id="a_prompt" name="a_prompt" value="best quality, extremely detailed"><br><br>
+        <label for="n_prompt">Negative Prompt:</label>
+        <input type="text" id="n_prompt" name="n_prompt" value="longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality"><br><br>
+        <label for="num_samples">Number of Samples:</label>
+        <input type="number" id="num_samples" name="num_samples" min="1" max="12" value="1"><br><br>
+        <label for="image_resolution">Image Resolution:</label>
+        <input type="number" id="image_resolution" name="image_resolution" min="256" max="768" value="512"><br><br>
+        <label for="ddim_steps">DDIM Steps:</label>
+        <input type="number" id="ddim_steps" name="ddim_steps" min="1" max="100" value="20"><br><br>
+        <label for="guess_mode">Guess Mode:</label>
+        <input type="checkbox" id="guess_mode" name="guess_mode"><br><br>
+        <label for="strength">Control Strength:</label>
+        <input type="number" id="strength" name="strength" min="0.0" max="2.0" step="0.01" value="1.0"><br><br>
+        <label for="scale">Guidance Scale:</label>
+        <input type="number" id="scale" name="scale" min="0.1" max="30.0" step="0.1" value="9.0"><br><br>
+        <label for="seed">Seed:</label>
+        <input type="number" id="seed" name="seed" min="-1" max="2147483647" value="-1"><br><br>
+        <label for="eta">eta (DDIM):</label>
+        <input type="number" id="eta" name="eta" value="0.0"><br><br>
+        <button type="submit">Run</button>
+    </form>
+    <div id="output"></div>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const requestData = {
+                prompt: formData.get('prompt'),
+                a_prompt: formData.get('a_prompt'),
+                n_prompt: formData.get('n_prompt'),
+                num_samples: parseInt(formData.get('num_samples')),
+                image_resolution: parseInt(formData.get('image_resolution')),
+                ddim_steps: parseInt(formData.get('ddim_steps')),
+                guess_mode: formData.get('guess_mode') === 'on',
+                strength: parseFloat(formData.get('strength')),
+                scale: parseFloat(formData.get('scale')),
+                seed: parseInt(formData.get('seed')),
+                eta: parseFloat(formData.get('eta')),
+
+            };
+            formData.append('request', JSON.stringify(requestData));
+            const response = await fetch('/process/', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            
+            let outputHTML = `<h3>Detected Map</h3>
+                              <img src="${result.detected_map}" alt="Detected Map" style="max-width:512px; display:block; margin-bottom:20px;" />
+                              <h3>Generated Results</h3>`;
+            result.results.forEach(src => {
+                outputHTML += `<img src="${src}" alt="Generated Image" style="max-width:512px; margin:10px;" />`;
+            });
+            outputHTML += `<h3>Saved Files</h3>
+                           <p>Detected Map: ${result.saved_files.detected_map}</p>
+                           <ul>`;
+            result.saved_files.results.forEach(path => {
+                outputHTML += `<li>${path}</li>`;
+            });
+            outputHTML += `</ul>`;
+            document.getElementById('output').innerHTML = outputHTML;
+        });
+    </script>
+</body>
+</html>
