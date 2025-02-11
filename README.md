@@ -33,7 +33,7 @@ Download the **[`control_sd15_canny.pth`](https://huggingface.co/lllyasviel/Cont
 
 ### 3. Move Required Files
 ```sh
-$ mv engineering/code/awesomedemo_added_features.py ControlNet/
+$ mv engineering/code/awesomedemo_added_feature.py ControlNet/
 $ mv engineering/img/mri_brain.jpg ControlNet/test_imgs/
 ```
 
